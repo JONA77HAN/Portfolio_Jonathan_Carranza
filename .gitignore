@@ -1,0 +1,19 @@
+# Entornos virtuales (el más importante)
+venv/
+env/
+ENV/
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Variables de entorno (donde guardarás tus llaves de API después)
+.env
+
+# Archivos de configuración de VS Code
+.vscode/
+
+# Archivos temporales de Windows/Mac
+Thumbs.db
+.DS_Store
