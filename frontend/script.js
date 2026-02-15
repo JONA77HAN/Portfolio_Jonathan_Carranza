@@ -1,20 +1,33 @@
 async function cargarTendencias() {
     const contenedor = document.getElementById('tendencias-meli');
-    try {
-        // Suponiendo que tu API de Python corre en localhost:8000
-        const response = await fetch('https://portfolio-backend-jonathan-carranza.onrender.com/mercado-libre/tendencias/MLA1055');
-        const data = await response.json();
+    if (!contenedor) return;
 
-        let html = '<ul>';
+    contenedor.innerHTML = "<li>Cargando tendencias...</li>";
+
+    try {
+        console.log("Intentando conectar al backend...");
+        const response = await fetch('https://portfolio-backend-jonathan-carranza.onrender.com/mercado-libre/tendencias/MLA1055');
+        
+        const data = await response.json();
+        console.log("¡Datos recibidos con éxito!", data);
+
+        if (data.error) {
+            contenedor.innerHTML = `<li>Error: ${data.error}</li>`;
+            return;
+        }
+
+        let html = '';
         data.forEach(item => {
-            html += `<li>🔥 ${item.keyword}</li>`;
+            html += `<li class="p-2 border-b border-gray-700 text-yellow-400">🔥 ${item.keyword}</li>`;
         });
-        html += '</ul>';
         
         contenedor.innerHTML = html;
+
     } catch (error) {
-        contenedor.innerHTML = "<p>Error al conectar con el backend</p>";
+        console.error("Error detallado:", error);
+        contenedor.innerHTML = "<li>Error al conectar con el backend. Revisa la consola (F12).</li>";
     }
 }
 
+// Asegurémonos de que se ejecute
 document.addEventListener('DOMContentLoaded', cargarTendencias);
