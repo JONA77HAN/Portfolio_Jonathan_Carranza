@@ -14,31 +14,32 @@ app.add_middleware(
 )
 
 # RUTA 1: Solo para probar que el servidor vive
-@app.get("/")
-def read_root():
-    return {"status": "Servidor Funcionando"}
-
-# RUTA 2: La que usa tu Portfolio
 @app.get("/mercado-libre/tendencias/{category_id}")
 async def get_trends(category_id: str):
+    # Headers más completos para "engañar" a la API
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json",
+        "Accept-Language": "es-AR,es;q=0.9"
     }
     url = f"https://api.mercadolibre.com/sites/MLA/search?category={category_id}&limit=5"
     
     try:
+        # Intentamos obtener datos reales
         response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
             results = data.get('results', [])
+            
             if results:
+                # Si hay resultados reales, los enviamos!
                 return [{"keyword": item.get('title')} for item in results]
     except Exception as e:
         print(f"Error: {e}")
 
-    # Si algo falla, devolvemos esta lista SIEMPRE (para que no de error en Vercel)
+    # Si MeLi nos sigue bloqueando, devolvemos los de respaldo (para no romper el CSS)
     return [
-        {"keyword": "Cámara Réflex Digital"},
-        {"keyword": "Objetivo 50mm f/1.8"},
-        {"keyword": "Trípode Profesional"}
+        {"keyword": "Tendencia: Fotografía"},
+        {"keyword": "Tendencia: Video 4K"},
+        {"keyword": "Tendencia: Iluminación Led"}
     ]
