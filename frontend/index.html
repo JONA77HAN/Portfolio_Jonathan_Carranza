@@ -91,39 +91,44 @@ ORDER BY net_profit DESC;</code></pre>
         <p>© 2026 - <span class="text-slate-400">Jonathan Carranza</span> | Full Stack Developer & MeLi Expert</p>
     </footer>
 
-    <script>
+   <script>
         async function fetchMeliData() {
             const container = document.getElementById('tendencias-meli');
             const url = 'https://portfolio-backend-jonathan-carranza.onrender.com/mercado-libre/tendencias/MLA1055';
 
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error("Backend Offline");
+                if (!response.ok) throw new Error("Backend Offline o Error 404");
 
                 const data = await response.json();
                 
-                // Limpiar esqueletos y renderizar datos reales
-                // Tomamos los primeros 3 para el diseño de 3 columnas
-                container.innerHTML = data.slice(0, 3).map(item => `
-                    <div class="bg-slate-900/50 p-6 rounded-xl text-center border border-slate-700 hover:border-yellow-400 transition duration-300">
-                        <p class="text-yellow-400 text-[10px] font-bold tracking-[0.2em] mb-2 uppercase">Tendencia MeLi</p>
-                        <p class="text-white font-semibold text-lg">${item.keyword}</p>
-                    </div>
-                `).join('');
+                // Imprimimos en consola para estar 100% seguros de qué llega
+                console.log("Datos recibidos de Render:", data);
+
+                // Validamos que los datos sean una lista antes de usar .slice
+                if (Array.isArray(data)) {
+                    container.innerHTML = data.slice(0, 3).map(item => `
+                        <div class="bg-slate-900/50 p-6 rounded-xl text-center border border-slate-700 hover:border-yellow-400 transition duration-300">
+                            <p class="text-yellow-400 text-[10px] font-bold tracking-[0.2em] mb-2 uppercase">Tendencia MeLi</p>
+                            <p class="text-white font-semibold text-lg">${item.keyword || 'Sin título'}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    // Si data no es lista, mostramos el error específico
+                    throw new Error("El backend respondió pero no envió una lista.");
+                }
 
             } catch (error) {
-                console.error("Error al obtener datos:", error);
+                console.error("Error detallado:", error);
                 container.innerHTML = `
                     <div class="col-span-full p-6 text-center bg-red-900/20 border border-red-900/50 rounded-xl">
                         <p class="text-red-400 font-mono text-sm italic">
-                            Error de conexión: El backend en Render está despertando o faltan permisos CORS.
+                            Backend conectado pero hay un problema con el formato de datos. Revisa la consola (F12).
                         </p>
                     </div>`;
             }
         }
-
-        // Ejecutar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', fetchMeliData);
+          document.addEventListener('DOMContentLoaded', fetchMeliData);
     </script>
 </body>
 </html>
